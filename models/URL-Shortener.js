@@ -8,7 +8,7 @@ const URL_Shortener_Schema = new Schema({
     type: String,
     required: true
   },
-  outputURL: {
+  shortenCode: {
     type: String,
     required: false
   }
