@@ -3,6 +3,7 @@ const express = require('express')
 const mongoose = require('mongoose')
 const exhbs = require('express-handlebars')
 const URL_Shortener = require('./models/URL-Shortener')
+const generateRandomChar = require('./tools/generateRandomChar')
 
 //Setting: express
 const app = express()
@@ -28,52 +29,35 @@ db.once('open', () => {
   console.log('Mongodb is connected!')
 })
 
-// function [generate random char]
-function pickChar(array) {
-  const index = Math.floor(Math.random() * array.length)
-  return array[index]
-}
-
-function generateRandomChar() {
-  //define things users want
-  const lowerCaseLetters = 'abcdefghijklmnopqrstuvwxyz'
-  const upperCaseLetters = lowerCaseLetters.toUpperCase()
-  const numbers = '1234567890'
-
-  //create array to store things users picked up
-  //split轉換成array
-  let collection = []
-  collection = collection.concat(lowerCaseLetters.split(''))
-  collection = collection.concat(upperCaseLetters.split(''))
-  collection = collection.concat(numbers.split(''))
-
-  //start generating password
-  let password = ''
-  for (let i = 1; i <= 5; i++) {
-    password += pickChar(collection)
-  }
-
-  //return the generated password
-  return password
-}
-// function [generate random char]
-
 //Routes: index page
 app.get('/', (req, res) => {
   res.render('index')
 })
 
-//Routes: catch index data
+//Routes: catch index shorten data
 app.post('/', (req, res) => {
   const inputURL = req.body.URL
-  const shortenCode = generateRandomChar()
-  const outputURL = `http://localhost:${PORT}/${shortenCode}`
-  URL_Shortener.create({
-    inputURL,
-    shortenCode,
+  URL_Shortener.findOne({inputURL}).lean().then(URL => {
+    //check does not exist same 'inputURL' data
+    if (!URL) {
+      let shortenCode = generateRandomChar()
+      const outputURL = `http://localhost:${PORT}/${shortenCode}`
+      URL_Shortener.find()
+        .lean()
+        .then(URLs => {
+          //check does not exist same 'shortenCode' data
+          while (URLs.find(URL => URL.shortenCode === shortenCode)) {
+            shortenCode = generateRandomChar()
+          }
+          URL_Shortener.create({ inputURL, shortenCode })
+            .then(() => res.render('index', { shortenCode, outputURL }))
+        })
+    } else {
+      const outputURL = `http://localhost:${PORT}/${URL.shortenCode}`
+      res.render('index', {outputURL})
+    }
   })
-    .then(() => res.render('index', { outputURL, inputURL}))
-    .catch(error => console.log(error))
+  .catch(error => console.log(error))
 })
 
 //Routes: shorten page
