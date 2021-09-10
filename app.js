@@ -4,6 +4,7 @@ const mongoose = require('mongoose')
 const exhbs = require('express-handlebars')
 const URL_Shortener = require('./models/URL-Shortener')
 const generateRandomChar = require('./tools/generateRandomChar')
+const checkURL = require('./tools/checkURL')
 
 //Setting: express
 const app = express()
@@ -12,7 +13,8 @@ const PORT = 3000
 //Setting: template engine
 app.engine('hbs', exhbs({
   defaultLayout: 'main',
-  extname: 'hbs'
+  extname: 'hbs',
+  helpers: require('./config/handlebars-helpers')
 }))
 app.set('view engine', 'hbs')
 //Setting: body-parser
@@ -39,24 +41,34 @@ app.get('/', (req, res) => {
 //Routes: catch index shorten data
 app.post('/', (req, res) => {
   const inputURL = req.body.URL
+  let statusURL = ''
+  //check: 'inputURL' is valid or not
+  if (!checkURL(inputURL)) {
+    statusURL = 'invalid'
+    return res.render('index', { statusURL })
+  }
   URL_Shortener.findOne({inputURL}).lean().then(URL => {
-    //check does not exist same 'inputURL' data
+    //check: does not exist same 'inputURL' data
     if (!URL) {
       let shortenCode = generateRandomChar()
       const outputURL = `http://localhost:${PORT}/${shortenCode}`
       URL_Shortener.find()
         .lean()
         .then(URLs => {
-          //check does not exist same 'shortenCode' data
+          //check: does not exist same 'shortenCode' data
           while (URLs.find(URL => URL.shortenCode === shortenCode)) {
             shortenCode = generateRandomChar()
           }
           URL_Shortener.create({ inputURL, shortenCode })
-            .then(() => res.render('index', { shortenCode, outputURL }))
+            .then(() => {
+              statusURL = 'valid'
+              res.render('index', { outputURL, statusURL })
+            })
         })
     } else {
       const outputURL = `http://localhost:${PORT}/${URL.shortenCode}`
-      res.render('index', {outputURL})
+      statusURL = 'already'
+      res.render('index', { outputURL, statusURL})
     }
   })
   .catch(error => console.log(error))
