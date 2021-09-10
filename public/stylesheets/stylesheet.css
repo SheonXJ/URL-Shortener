@@ -1,0 +1,12 @@
+body {
+  background-color: rgb(43, 42, 40);
+  color: rgba(218, 204, 177, 0.9);
+}
+
+.navbar {
+  background-color: rgb(71, 69, 66);
+}
+
+.navbar-light .navbar-brand {
+  color: rgba(218, 204, 177, 0.9);
+}

@@ -17,6 +17,8 @@ app.engine('hbs', exhbs({
 app.set('view engine', 'hbs')
 //Setting: body-parser
 app.use(express.urlencoded({ extended: true}))
+//Setting: static files
+app.use(express.static('public'))
 
 //Setting: database
 mongoose.connect('mongodb://localhost/URL-Shortener', { useNewUrlParser: true, useUnifiedTopology: true })
