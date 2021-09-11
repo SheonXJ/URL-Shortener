@@ -10,3 +10,7 @@ body {
 .navbar-light .navbar-brand {
   color: rgba(218, 204, 177, 0.9);
 }
+
+.btn {
+  font-weight: bold;
+}

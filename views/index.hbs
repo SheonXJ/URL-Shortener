@@ -2,7 +2,7 @@
   <i class="fas fa-link fa-10x"></i>
 </div>
 
-<div class="container row mx-auto justify-content-center mt-5 img {{#if statusURL}}hidden{{/if}}" id="test">
+<div class="container row mx-auto justify-content-center mt-5">
   <div class="col-8 text-center">
     <form action="/" method="POST" class=" d-flex">
       <input type="text" class="form-control" name="URL" id="URL" placeholder="Please enter the URL" value="{{outputURL}}">
@@ -13,9 +13,9 @@
 
 {{!-- alert: if URL is not valid --}}
 {{#ifeq statusURL "invalid"}}
-<div class="container alert row mx-auto justify-content-center mt-2" id="test2">
+<div class="container alert row mx-auto justify-content-center mt-2">
   <div class="col-8 text-center">
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <div class="alert alert-danger alert-dismissible fade show" role="alert"  >
       Unable to shorten that link.<strong>The link is not a valid URL!</strong>
       <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
@@ -27,11 +27,11 @@
 
 {{!-- alert: if URL is valid --}}
 {{#ifeq statusURL "valid"}}
-<div class="container alert row mx-auto justify-content-center mt-2" id="test2">
+<div class="container alert row mx-auto justify-content-center mt-2">
   <div class="col-8">
     <div class="alert alert-success text-center">
       <strong>URL has been successfully shorten!</strong> Please click the 'Copy' button
-      <button type="button" class="btn btn-info ">
+      <button type="button" class="btn btn-info" onclick="copyToClipBoard()">
         COPY
       </button>
     </div>
@@ -41,14 +41,26 @@
 
 {{!-- alert: if URL already exist --}}
 {{#ifeq statusURL "already"}}
-<div class="container alert row mx-auto justify-content-center mt-2" id="test2">
+<div class="container alert row mx-auto justify-content-center mt-2">
   <div class="col-8">
     <div class="alert alert-warning text-center">
       <strong>URL has been shortened!</strong> Please click the 'Copy' button
-      <button type="button" class="btn btn-info ">
+      <button type="button" class="btn btn-info" onclick="copyToClipBoard()">
         COPY
       </button>
     </div>
   </div>
 </div>
 {{/ifeq}}
+
+{{!-- Button copy function  --}}
+<script language="javascript">
+  function copyToClipBoard() {
+    const content = document.getElementById("URL") 
+
+    content.select() //選擇整個文字,類似於使用滑鼠選擇文字
+    document.execCommand('copy') //將複製選定的文字
+
+    alert("Copied!");
+  }
+</script>
