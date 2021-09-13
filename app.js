@@ -6,7 +6,7 @@ require('./config/mongoose')
 
 //Setting: express
 const app = express()
-const PORT = 3000
+const PORT = process.env.PORT || 3000
 
 //Setting: template engine
 app.engine('hbs', exhbs({

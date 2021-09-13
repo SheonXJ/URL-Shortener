@@ -21,7 +21,7 @@ router.post('/', (req, res) => {
     //check: does not exist same 'inputURL' data
     if (!URL) {
       let shortenCode = generateRandomChar()
-      const outputURL = `http://localhost:3000/${shortenCode}`
+      const outputURL = `${req.protocol}://${req.get('host')}/${shortenCode}`
       URL_Shortener.find()
         .lean()
         .then(URLs => {
@@ -36,7 +36,7 @@ router.post('/', (req, res) => {
             })
         })
     } else {
-      const outputURL = `http://localhost:3000/${URL.shortenCode}`
+      const outputURL = `${req.protocol}://${req.get('host')}/${URL.shortenCode}`
       statusURL = 'already'
       res.render('index', { outputURL, statusURL })
     }
